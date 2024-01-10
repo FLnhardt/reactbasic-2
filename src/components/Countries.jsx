@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Country from './Country'
 
-function Countries({ countries }) {
-  const [filteredCountries, setFilteredCountries] = useState(null)
-	const [searchString, setSearchString] = useState("")
-
-	useEffect(() => setFilteredCountries(countries
-		.filter(country => country.name.common.toLowerCase().includes(searchString.toLowerCase()))	
-	), [searchString, countries])
+function Countries({ countries, setSearchName }) {
+	const [sort, setSort] = useState("asc") // "desc"
 
 	return (
 		<div className='countries'>
-			<input type="text" placeholder="search" onChange={event => setSearchString(event.target.value)}/>
+			<input type="text" placeholder="search" onChange={event => setSearchName(event.target.value)}/>
 
-			{searchString === "" 
+			<button onClick={() => {
+				sort === "asc" ? setSort("desc") : setSort("asc")
+			}}>{sort === "desc" ? "sort by ascending" : "sort by descending"}</button>
+
+			{sort === "asc" 
 				? 
-				countries.map((country, index) => <Country country={country} key={index}/>)
+				[...countries]
+					.sort((a, b) => a.name.common.localeCompare(b.name.common))
+					.map((country, index) => <Country country={country} key={index} />)
 				:
-				filteredCountries.map((country, index) => <Country country={country} key={index}/>)
+				[...countries]
+					.sort((a, b) => b.name.common.localeCompare(a.name.common))
+					.map((country, index) => <Country country={country} key={index} />)
 			}
 		</div>
 	)
